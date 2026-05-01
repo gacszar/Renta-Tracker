@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1a1a2e">
+<title>💰 Mi Renta</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f0f2f8;
+    --card: #ffffff;
+    --text: #1e1e2e;
+    --muted: #8a8aaa;
+    --radius: 18px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.08);
+  }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 40px;
+    overscroll-behavior: none;
+  }
+
+  /* HEADER */
+  .app-header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+    padding: 52px 20px 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .app-header::before {
+    content: '';
+    position: absolute;
+    width: 220px; height: 220px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 50%;
+    top: -60px; right: -60px;
+  }
+  .app-header::after {
+    content: '';
+    position: absolute;
+    width: 140px; height: 140px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 50%;
+    bottom: -40px; left: -20px;
+  }
+  .app-header h1 {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -0.5px;
+    position: relative;
+  }
+  .app-header p {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.55);
+    margin-top: 6px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    position: relative;
+  }
+
+  /* TOTAL BANNER */
+  .total-banner {
+    margin: -1px 0 0;
+    background: linear-gradient(135deg, #0f3460, #533483);
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .total-banner .label {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.6);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .total-banner .amount {
+    font-family: 'DM Mono', monospace;
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: #fff;
+  }
+  .total-banner .goal {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.45);
+    text-align: right;
+  }
+  .progress-bar-wrap {
+    height: 5px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 99px;
+    margin-top: 10px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #a8edea, #fed6e3);
+    border-radius: 99px;
+    transition: width 0.5s ease;
+  }
+
+  /* CONTENT */
+  .content {
+    padding: 20px 14px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* MONTH CARD */
+  .month-card {
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    background: var(--card);
+  }
+
+  .month-header {
+    padding: 14px 16px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .month-header .left .month-name {
+    font-size: 1.05rem;
+    font-weight: 900;
+    letter-spacing: -0.3px;
+  }
+  .month-header .left .due-date {
+    font-size: 0.7rem;
+    font-weight: 700;
+    opacity: 0.6;
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .month-badge {
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 99px;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+
+  /* PROGRESS ROW */
+  .month-progress {
+    padding: 0 16px 10px;
+  }
+  .progress-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .progress-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    opacity: 0.55;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .progress-pct {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+    opacity: 0.7;
+  }
+  .month-bar-wrap {
+    height: 6px;
+    background: rgba(0,0,0,0.07);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .month-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.4s ease;
+  }
+
+  /* WEEKS */
+  .weeks-list {
+    border-top: 1px solid rgba(0,0,0,0.05);
+  }
+  .week-row {
+    display: flex;
+    align-items: center;
+    padding: 13px 16px;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+    gap: 12px;
+    transition: background 0.15s;
+  }
+  .week-row:last-child { border-bottom: none; }
+  .week-row:active { background: rgba(0,0,0,0.03); }
+
+  .week-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .week-date {
+    flex: 1;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .week-amount {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  /* TOGGLE BUTTON */
+  .toggle-btn {
+    width: 60px;
+    height: 30px;
+    border-radius: 99px;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.25s ease;
+    flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .toggle-btn::after {
+    content: '';
+    position: absolute;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: white;
+    top: 4px;
+    transition: left 0.25s ease, transform 0.1s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  }
+  .toggle-btn.off {
+    background: #e0e0e0;
+  }
+  .toggle-btn.off::after { left: 4px; }
+  .toggle-btn.on {
+    background: #4caf50;
+  }
+  .toggle-btn.on::after { left: 34px; }
+  .toggle-btn:active::after { transform: scale(0.9); }
+
+  .toggle-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-align: center;
+    margin-top: 2px;
+    letter-spacing: 0.3px;
+  }
+  .toggle-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+  }
+  .toggle-label.on { color: #2e7d32; }
+  .toggle-label.off { color: #bbb; }
+
+  /* MONTH SUMMARY FOOTER */
+  .month-footer {
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(0,0,0,0.06);
+  }
+  .month-footer .collected {
+    font-size: 0.8rem;
+    font-weight: 700;
+    opacity: 0.6;
+  }
+  .month-footer .collected span {
+    font-family: 'DM Mono', monospace;
+    font-size: 1rem;
+    font-weight: 500;
+    opacity: 1;
+    color: var(--text);
+  }
+  .status-chip {
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 5px 10px;
+    border-radius: 99px;
+  }
+
+  /* PALETTE VARIANTS */
+  .p0 { --h: #f28b82; --hf: #6b1f1a; --light: #fff5f5; --bar: #f28b82; }
+  .p1 { --h: #fbbc04; --hf: #6b4c00; --light: #fffde7; --bar: #fbbc04; }
+  .p2 { --h: #34a853; --hf: #0d4a20; --light: #f0fdf4; --bar: #34a853; }
+  .p3 { --h: #4285f4; --hf: #0d2e7a; --light: #eff6ff; --bar: #4285f4; }
+  .p4 { --h: #a142f4; --hf: #3a0070; --light: #faf5ff; --bar: #a142f4; }
+  .p5 { --h: #ff6d00; --hf: #6b2800; --light: #fff7ed; --bar: #ff6d00; }
+  .p6 { --h: #00acc1; --hf: #003d47; --light: #ecfeff; --bar: #00acc1; }
+  .p7 { --h: #e91e8c; --hf: #5c0030; --light: #fdf2f8; --bar: #e91e8c; }
+  .p8 { --h: #f28b82; --hf: #6b1f1a; --light: #fff5f5; --bar: #f28b82; }
+  .p9 { --h: #fbbc04; --hf: #6b4c00; --light: #fffde7; --bar: #fbbc04; }
+  .p10 { --h: #34a853; --hf: #0d4a20; --light: #f0fdf4; --bar: #34a853; }
+  .p11 { --h: #4285f4; --hf: #0d2e7a; --light: #eff6ff; --bar: #4285f4; }
+
+  .month-card { background: var(--light, #fff); }
+  .month-header { background: var(--h); }
+  .month-header .left .month-name { color: var(--hf); }
+  .month-header .left .due-date { color: var(--hf); }
+  .month-badge { background: rgba(0,0,0,0.12); color: var(--hf); }
+  .month-bar-fill { background: var(--bar); }
+
+  /* COMPLETE state */
+  .complete-overlay {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb) !important;
+  }
+  .status-chip.done { background: #d4edda; color: #155724; }
+  .status-chip.progress { background: rgba(0,0,0,0.07); color: var(--muted); }
+
+  /* GRAND TOTAL */
+  .grand-total {
+    margin: 0 14px;
+    background: linear-gradient(135deg, #1a1a2e, #0f3460);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 8px 32px rgba(15,52,96,0.3);
+  }
+  .grand-total .gt-label {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.5);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .grand-total .gt-amount {
+    font-family: 'DM Mono', monospace;
+    font-size: 1.8rem;
+    color: #fff;
+    font-weight: 500;
+    margin-top: 4px;
+  }
+  .grand-total .gt-sub {
+    font-size: 0.68rem;
+    color: rgba(255,255,255,0.35);
+    margin-top: 2px;
+  }
+  .grand-total .gt-pct {
+    font-family: 'DM Mono', monospace;
+    font-size: 2rem;
+    color: #a8edea;
+    font-weight: 400;
+  }
+
+  .section-gap { height: 6px; }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <h1>💰 Mi Renta</h1>
+  <p>$200 cada sábado · vence el día 8</p>
+</div>
+
+<div class="total-banner">
+  <div>
+    <div class="label">Total apartado</div>
+    <div class="amount" id="total-amount">$0</div>
+    <div class="goal">de $10,400 meta anual</div>
+  </div>
+  <div style="flex:1; padding-left:20px;">
+    <div class="progress-row">
+      <span class="label" style="color:rgba(255,255,255,0.5)">Progreso anual</span>
+      <span class="progress-pct" id="total-pct" style="color:rgba(255,255,255,0.7)">0%</span>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="total-bar" style="width:0%"></div>
+    </div>
+  </div>
+</div>
+
+<div class="content" id="app-content"></div>
+<div class="section-gap"></div>
+
+<script>
+const PERIODS = [{"month":"Abril","year":2026,"due":"08/05/2026","sats":["11/04/2026","18/04/2026","25/04/2026","02/05/2026"]},{"month":"Mayo","year":2026,"due":"08/06/2026","sats":["09/05/2026","16/05/2026","23/05/2026","30/05/2026","06/06/2026"]},{"month":"Junio","year":2026,"due":"08/07/2026","sats":["13/06/2026","20/06/2026","27/06/2026","04/07/2026"]},{"month":"Julio","year":2026,"due":"08/08/2026","sats":["11/07/2026","18/07/2026","25/07/2026","01/08/2026","08/08/2026"]},{"month":"Agosto","year":2026,"due":"08/09/2026","sats":["15/08/2026","22/08/2026","29/08/2026","05/09/2026"]},{"month":"Septiembre","year":2026,"due":"08/10/2026","sats":["12/09/2026","19/09/2026","26/09/2026","03/10/2026"]},{"month":"Octubre","year":2026,"due":"08/11/2026","sats":["10/10/2026","17/10/2026","24/10/2026","31/10/2026","07/11/2026"]},{"month":"Noviembre","year":2026,"due":"08/12/2026","sats":["14/11/2026","21/11/2026","28/11/2026","05/12/2026"]},{"month":"Diciembre","year":2026,"due":"08/01/2027","sats":["12/12/2026","19/12/2026","26/12/2026","02/01/2027"]},{"month":"Enero","year":2027,"due":"08/02/2027","sats":["09/01/2027","16/01/2027","23/01/2027","30/01/2027","06/02/2027"]},{"month":"Febrero","year":2027,"due":"08/03/2027","sats":["13/02/2027","20/02/2027","27/02/2027","06/03/2027"]},{"month":"Marzo","year":2027,"due":"08/04/2027","sats":["13/03/2027","20/03/2027","27/03/2027","03/04/2027"]}];
+
+function loadState() {
+  try {
+    // Try localStorage first
+    const ls = localStorage.getItem('renta_v1');
+    if (ls) return JSON.parse(ls);
+  } catch {}
+  try {
+    // Fallback: URL hash
+    const hash = window.location.hash.slice(1);
+    if (hash) return JSON.parse(atob(hash));
+  } catch {}
+  return {};
+}
+
+function saveState(state) {
+  try {
+    localStorage.setItem('renta_v1', JSON.stringify(state));
+  } catch {}
+  try {
+    // Also encode in URL hash as backup
+    window.history.replaceState(null, '', '#' + btoa(JSON.stringify(state)));
+  } catch {}
+}
+
+function getKey(pIdx, wIdx) { return `p${pIdx}_w${wIdx}`; }
+
+let state = {}; try { state = loadState(); } catch(e) { state = {}; }
+
+function countPaid(pIdx) {
+  return PERIODS[pIdx].sats.filter((_, wIdx) => state[getKey(pIdx, wIdx)]).length;
+}
+
+function totalPaid() {
+  return PERIODS.reduce((sum, _, i) => sum + countPaid(i) * 200, 0);
+}
+
+function updateTotals() {
+  const total = totalPaid();
+  const goal = 10400;
+  const pct = Math.round((total / goal) * 100);
+  document.getElementById('total-amount').textContent = '$' + total.toLocaleString();
+  document.getElementById('total-pct').textContent = pct + '%';
+  document.getElementById('total-bar').style.width = Math.min(pct, 100) + '%';
+}
+
+function updateMonthCard(pIdx) {
+  const period = PERIODS[pIdx];
+  const paid = countPaid(pIdx);
+  const total = period.sats.length;
+  const pct = total > 0 ? Math.round((paid / total) * 100) : 0;
+  const amount = paid * 200;
+  const done = paid === total;
+
+  const bar = document.getElementById(`bar-${pIdx}`);
+  const pctEl = document.getElementById(`pct-${pIdx}`);
+  const badge = document.getElementById(`badge-${pIdx}`);
+  const footer = document.getElementById(`footer-${pIdx}`);
+  const amountEl = document.getElementById(`amount-${pIdx}`);
+  const statusEl = document.getElementById(`status-${pIdx}`);
+  const card = document.getElementById(`card-${pIdx}`);
+
+  if (bar) bar.style.width = pct + '%';
+  if (pctEl) pctEl.textContent = pct + '%';
+  if (badge) badge.textContent = `${paid}/${total} sábados`;
+  if (amountEl) amountEl.innerHTML = `<span>$${amount.toLocaleString()}</span>`;
+
+  if (statusEl) {
+    if (done) {
+      statusEl.textContent = '🎉 ¡Lista para el día 8!';
+      statusEl.className = 'status-chip done';
+    } else {
+      statusEl.textContent = `⏳ En progreso... ${pct}%`;
+      statusEl.className = 'status-chip progress';
+    }
+  }
+
+  if (footer && done) {
+    footer.style.background = 'linear-gradient(135deg, #d4edda, #c3e6cb)';
+  } else if (footer) {
+    footer.style.background = '';
+  }
+}
+
+function toggle(pIdx, wIdx) {
+  const key = getKey(pIdx, wIdx);
+  state[key] = !state[key];
+  saveState(state);
+
+  const btn = document.getElementById(`btn-${pIdx}-${wIdx}`);
+  const lbl = document.getElementById(`lbl-${pIdx}-${wIdx}`);
+  if (btn) {
+    btn.className = 'toggle-btn ' + (state[key] ? 'on' : 'off');
+  }
+  if (lbl) {
+    lbl.textContent = state[key] ? 'Sí' : 'No';
+    lbl.className = 'toggle-label ' + (state[key] ? 'on' : 'off');
+  }
+
+  updateMonthCard(pIdx);
+  updateTotals();
+}
+
+function render() {
+  const container = document.getElementById('app-content');
+  container.innerHTML = '';
+
+  PERIODS.forEach((period, pIdx) => {
+    const paid = countPaid(pIdx);
+    const total = period.sats.length;
+    const pct = total > 0 ? Math.round((paid / total) * 100) : 0;
+    const amount = paid * 200;
+    const done = paid === total;
+
+    const card = document.createElement('div');
+    card.className = `month-card p${pIdx}`;
+    card.id = `card-${pIdx}`;
+
+    card.innerHTML = `
+      <div class="month-header">
+        <div class="left">
+          <div class="month-name">${period.month} ${period.year}</div>
+          <div class="due-date">Vence el ${period.due}</div>
+        </div>
+        <div class="month-badge" id="badge-${pIdx}">${paid}/${total} sábados</div>
+      </div>
+
+      <div class="month-progress">
+        <div class="progress-row">
+          <span class="progress-label">Progreso</span>
+          <span class="progress-pct" id="pct-${pIdx}">${pct}%</span>
+        </div>
+        <div class="month-bar-wrap">
+          <div class="month-bar-fill" id="bar-${pIdx}" style="width:${pct}%"></div>
+        </div>
+      </div>
+
+      <div class="weeks-list">
+        ${period.sats.map((sat, wIdx) => {
+          const isOn = !!state[getKey(pIdx, wIdx)];
+          return `
+          <div class="week-row">
+            <span class="week-num">${wIdx + 1}</span>
+            <span class="week-date">${sat}</span>
+            <span class="week-amount">$200</span>
+            <div class="toggle-wrap">
+              <button class="toggle-btn ${isOn ? 'on' : 'off'}"
+                id="btn-${pIdx}-${wIdx}"
+                onclick="toggle(${pIdx},${wIdx})"
+                aria-label="Marcar semana ${wIdx+1}">
+              </button>
+              <span class="toggle-label ${isOn ? 'on' : 'off'}" id="lbl-${pIdx}-${wIdx}">${isOn ? 'Sí' : 'No'}</span>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+
+      <div class="month-footer" id="footer-${pIdx}" ${done ? 'style="background:linear-gradient(135deg,#d4edda,#c3e6cb)"' : ''}>
+        <div class="collected">Apartado: <span>$${amount.toLocaleString()}</span></div>
+        <div class="status-chip ${done ? 'done' : 'progress'}" id="status-${pIdx}">
+          ${done ? '🎉 ¡Lista para el día 8!' : `⏳ En progreso... ${pct}%`}
+        </div>
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
+
+  updateTotals();
+}
+
+// In-memory state as final fallback (works even when all storage blocked)
+if (typeof state === 'undefined') { state = {}; }
+
+document.addEventListener('DOMContentLoaded', function() {
+  render();
+});
+
+// Also call directly in case DOM already loaded
+if (document.readyState !== 'loading') {
+  render();
+}
+</script>
+</body>
+</html>
